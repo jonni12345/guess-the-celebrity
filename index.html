@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Celebrity</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Guess the Celebrity</h1>
+        <div class="game-area">
+            <canvas id="celebrityCanvas" width="300" height="300"></canvas>
+            <input type="text" id="guessInput" placeholder="Type your guess..." />
+            <button onclick="submitGuess()">Submit Guess</button>
+            <button onclick="revealMore()">Reveal More</button>
+            <p id="feedback"></p>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
