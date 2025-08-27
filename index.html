@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Guess the Celebrity</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <div class="container">
@@ -15,6 +15,10 @@
             <button onclick="submitGuess()">Submit Guess</button>
             <button onclick="revealMore()">Reveal More</button>
             <p id="feedback"></p>
+            <!-- Put the score display right here -->
+            <div id="score-display" style="font-weight: bold; font-size: 18px; margin-top: 10px;">
+                Score: 100
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
