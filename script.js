@@ -1,52 +1,57 @@
-let image = new Image();
-let pixelation = 20;
-let actualName = "";
-let canvas = document.getElementById("celebrityCanvas");
-let ctx = canvas.getContext("2d");
+let score = 100;
+let maxPixelation = 20; // max blur
+let currentPixelation = maxPixelation;
 
-fetch("data.json")
-    .then(response => response.json())
-    .then(data => {
-        const today = new Date().toISOString().slice(0, 10);
-        const todayEntry = data[today] || data["default"];
-        actualName = todayEntry.name.toLowerCase();
-        image.src = todayEntry.image;
-    });
+const image = document.getElementById('celebrity-image');
+const clueButton = document.getElementById('clue-button');
+const guessInput = document.getElementById('guess-input');
+const submitButton = document.getElementById('submit-button');
+const message = document.getElementById('message');
+const scoreDisplay = document.getElementById('score-display');
 
-image.onload = function () {
-    drawPixelated(pixelation);
+const data = {
+  "answer": "Zendaya"
+  // add more data or change dynamically as needed
 };
 
-function drawPixelated(pixelSize) {
-    const w = canvas.width;
-    const h = canvas.height;
-    ctx.drawImage(image, 0, 0, w, h);
-    let imgData = ctx.getImageData(0, 0, w, h);
-
-    for (let y = 0; y < h; y += pixelSize) {
-        for (let x = 0; x < w; x += pixelSize) {
-            const red = imgData.data[((w * y + x) * 4)];
-            const green = imgData.data[((w * y + x) * 4) + 1];
-            const blue = imgData.data[((w * y + x) * 4) + 2];
-            ctx.fillStyle = `rgb(${red},${green},${blue})`;
-            ctx.fillRect(x, y, pixelSize, pixelSize);
-        }
-    }
+function updateImage() {
+  image.style.filter = `blur(${currentPixelation}px)`;
 }
 
-function revealMore() {
-    if (pixelation > 1) {
-        pixelation -= 3;
-        drawPixelated(pixelation);
-    }
+function updateScore() {
+  scoreDisplay.textContent = `Score: ${score}`;
 }
 
-function submitGuess() {
-    const userGuess = document.getElementById("guessInput").value.toLowerCase();
-    const feedback = document.getElementById("feedback");
-    if (userGuess === actualName) {
-        feedback.textContent = "Correct! 🎉";
-    } else {
-        feedback.textContent = "Nope, try again!";
-    }
-}
+clueButton.addEventListener('click', () => {
+  if (currentPixelation > 0) {
+    currentPixelation -= 4;
+    if (currentPixelation < 0) currentPixelation = 0;
+    
+    // decrease score but not below zero
+    score = Math.max(0, score - 20);
+    updateScore();
+    updateImage();
+  } else {
+    message.textContent = "Image is fully revealed!";
+  }
+});
+
+submitButton.addEventListener('click', () => {
+  const guess = guessInput.value.trim().toLowerCase();
+  if (!guess) {
+    message.textContent = "Please enter a guess!";
+    return;
+  }
+  if (guess === data.answer.toLowerCase()) {
+    message.textContent = `Correct! Your final score is ${score}. 🎉`;
+    clueButton.disabled = true;
+    submitButton.disabled = true;
+  } else {
+    message.textContent = "Wrong guess, try again!";
+  }
+});
+
+// Initialize
+updateImage();
+updateScore();
+message.textContent = "Guess who this is!";
