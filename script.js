@@ -1,57 +1,69 @@
-let score = 100;
-let maxPixelation = 20; // max blur
-let currentPixelation = maxPixelation;
-
-const image = document.getElementById('celebrity-image');
-const clueButton = document.getElementById('clue-button');
-const guessInput = document.getElementById('guess-input');
-const submitButton = document.getElementById('submit-button');
-const message = document.getElementById('message');
+const canvas = document.getElementById('celebrityCanvas');
+const ctx = canvas.getContext('2d');
+const revealBtn = document.getElementById('revealBtn');
+const submitBtn = document.getElementById('submitBtn');
+const guessInput = document.getElementById('guessInput');
+const feedback = document.getElementById('feedback');
 const scoreDisplay = document.getElementById('score-display');
 
-const data = {
-  "answer": "Zendaya"
-  // add more data or change dynamically as needed
+const answer = "zendaya"; // Celebrity name in lowercase
+let score = 100;
+let maxPixelation = 20;
+let currentPixelation = maxPixelation;
+
+const img = new Image();
+img.src = 'celebrity.jpg';  // Image filename (must be in same folder)
+
+img.onload = () => {
+  drawPixelated(currentPixelation);
 };
 
-function updateImage() {
-  image.style.filter = `blur(${currentPixelation}px)`;
+function drawPixelated(pixelSize) {
+  const width = canvas.width;
+  const height = canvas.height;
+
+  ctx.clearRect(0, 0, width, height);
+  ctx.imageSmoothingEnabled = false;
+
+  // Draw the image small, then scale up to pixelate
+  ctx.drawImage(img, 0, 0, width / pixelSize, height / pixelSize);
+  ctx.drawImage(canvas, 0, 0, width / pixelSize, height / pixelSize, 0, 0, width, height);
 }
 
 function updateScore() {
   scoreDisplay.textContent = `Score: ${score}`;
 }
 
-clueButton.addEventListener('click', () => {
+revealBtn.addEventListener('click', () => {
   if (currentPixelation > 0) {
     currentPixelation -= 4;
     if (currentPixelation < 0) currentPixelation = 0;
-    
-    // decrease score but not below zero
+
     score = Math.max(0, score - 20);
     updateScore();
-    updateImage();
-  } else {
-    message.textContent = "Image is fully revealed!";
+    drawPixelated(currentPixelation);
+
+    if(currentPixelation === 0) {
+      feedback.textContent = "Image is fully revealed!";
+      revealBtn.disabled = true;
+    }
   }
 });
 
-submitButton.addEventListener('click', () => {
+submitBtn.addEventListener('click', () => {
   const guess = guessInput.value.trim().toLowerCase();
   if (!guess) {
-    message.textContent = "Please enter a guess!";
+    feedback.textContent = "Please enter a guess!";
     return;
   }
-  if (guess === data.answer.toLowerCase()) {
-    message.textContent = `Correct! Your final score is ${score}. 🎉`;
-    clueButton.disabled = true;
-    submitButton.disabled = true;
+  if (guess === answer) {
+    feedback.textContent = `Correct! Your final score is ${score}. 🎉`;
+    revealBtn.disabled = true;
+    submitBtn.disabled = true;
   } else {
-    message.textContent = "Wrong guess, try again!";
+    feedback.textContent = "Wrong guess, try again!";
   }
 });
 
 // Initialize
-updateImage();
 updateScore();
-message.textContent = "Guess who this is!";
